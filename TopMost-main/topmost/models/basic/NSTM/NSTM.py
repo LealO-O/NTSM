@@ -3,7 +3,7 @@
 import torch
 from torch import nn
 import torch.nn.functional as F
-from .auto_diff_sinkhorn import sinkhorn_loss,swd
+from .auto_diff_sinkhorn import sinkhorn_loss,SWD
 
 
 class NSTM(nn.Module):
@@ -53,7 +53,7 @@ class NSTM(nn.Module):
         theta = self.get_theta(input)  #文档的主题分布  
         beta = self.get_beta()   #主题嵌入矩阵和词嵌入矩阵之间的相关性矩阵[num_topics, vocab_size]
         M = 1 - beta     #cost matrix
-        sh_loss = swd(M, theta.T)
+        sh_loss = SWD(M, theta.T)
         recon = F.softmax(torch.matmul(theta, beta), dim=-1)  #重构误差（定义为模型输出值与原始输入之间的均方误差）最小化
         recon_loss = -(input * recon.log()).sum(axis=1)
 
