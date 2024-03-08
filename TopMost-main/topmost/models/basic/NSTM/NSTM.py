@@ -13,7 +13,7 @@ class NSTM(nn.Module):
 
         He Zhao, Dinh Phung, Viet Huynh, Trung Le, Wray Buntine.
     '''
-    def __init__(self, vocab_size, num_topics=50, en_units=400, dropout=0.25, pretrained_WE=None, train_WE=True, embed_size=200, recon_loss_weight=0.07, sinkhorn_alpha=20):
+    def __init__(self, vocab_size, num_topics=50, en_units=600, dropout=0.25, pretrained_WE=None, train_WE=True, embed_size=200, recon_loss_weight=0.07, sinkhorn_alpha=20):
         super().__init__()
 
         self.recon_loss_weight = recon_loss_weight
