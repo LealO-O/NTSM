@@ -40,15 +40,20 @@ class NSTM(nn.Module):
         word_embedding_norm = F.normalize(self.word_embeddings) # [vocab_size, embed_size]
         topic_embedding_norm = F.normalize(self.topic_embeddings) # [num_topics, embed_size]
         beta = torch.matmul(topic_embedding_norm, word_embedding_norm.T) # 矩阵乘法 [num_topics, vocab_size]
-        
         return beta
 
     def get_theta(self, input): #在3.proposed model寻找相关
-        theta = F.relu(self.e1(input)) # 通过 ReLU 激活函数，将所有负值置为0
+        # theta = F.relu(self.e1(input)) # 通过 ReLU 激活函数，将所有负值置为0
+        # theta = self.e_dropout(theta) #进行 Dropout 操作,以防止过拟合。
+        # theta = self.mean_bn(self.e2(theta))#并通过 BatchNormalization 层 self.mean_bn，对结果进行标准化处理。
+        # theta = F.softmax(theta, dim=-1) # 最后，对标准化后的结果进行 Softmax 操作，得到文档的主题分布 theta，使得 theta 中每个元素都在 0 到 1 之间，并且所有元素的和为1，表示每个主题的概率。
+        # return theta  # 论文中的z = softmax(θ(~x))
+        theta = F.relu(self.e2(input.T))
         theta = self.e_dropout(theta) #进行 Dropout 操作,以防止过拟合。
         theta = self.mean_bn(self.e2(theta))#并通过 BatchNormalization 层 self.mean_bn，对结果进行标准化处理。
-        theta = F.softmax(theta, dim=-1) # 最后，对标准化后的结果进行 Softmax 操作，得到文档的主题分布 theta，使得 theta 中每个元素都在 0 到 1 之间，并且所有元素的和为1，表示每个主题的概率。
-        return theta  # 论文中的z = softmax(θ(~x))
+        theta = F.softmax(theta, dim=-1)
+        return theta
+ 
 
     def forward(self, input):
         theta = self.get_theta(input)  #文档的主题分布  
