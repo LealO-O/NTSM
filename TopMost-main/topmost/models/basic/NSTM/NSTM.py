@@ -48,7 +48,7 @@ class NSTM(nn.Module):
         # theta = self.mean_bn(self.e2(theta))#并通过 BatchNormalization 层 self.mean_bn，对结果进行标准化处理。
         # theta = F.softmax(theta, dim=-1) # 最后，对标准化后的结果进行 Softmax 操作，得到文档的主题分布 theta，使得 theta 中每个元素都在 0 到 1 之间，并且所有元素的和为1，表示每个主题的概率。
         # return theta  # 论文中的z = softmax(θ(~x))
-        theta = F.relu(self.e2(input.T))
+        theta = F.relu(input.T)
         theta = self.e_dropout(theta) #进行 Dropout 操作,以防止过拟合。
         theta = self.mean_bn(self.e2(theta))#并通过 BatchNormalization 层 self.mean_bn，对结果进行标准化处理。
         theta = F.softmax(theta, dim=-1)
