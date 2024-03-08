@@ -23,7 +23,7 @@ class BasicTrainer:
             'lr': self.learning_rate,
         }
 
-        optimizer = torch.optim.Adam(**args_dict)
+        optimizer = torch.optim.Adadelta(**args_dict)
         return optimizer
 
 
