@@ -1,5 +1,5 @@
 import torch
-
+from .swd import swd
 
 def sinkhorn_loss(M, a, b, lambda_sh, numItermax=5000, stopThr=.5e-2):
     device = a.device
