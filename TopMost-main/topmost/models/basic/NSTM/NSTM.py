@@ -55,19 +55,19 @@ class NSTM(nn.Module):
     def forward(self, input):
         theta = self.get_theta(input)  #文档的主题分布  
         beta = self.get_beta()   #主题嵌入矩阵和词嵌入矩阵之间的相关性矩阵[num_topics, vocab_size]
-        import sys
+        # import sys
 
-        # 保存原始的标准输出流
-        original_stdout = sys.stdout
+        # # 保存原始的标准输出流
+        # original_stdout = sys.stdout
 
-        # 将输出流重定向到标准输出
-        sys.stdout = original_stdout
+        # # 将输出流重定向到标准输出
+        # sys.stdout = original_stdout
 
-        # 打印X和Y的形状
-        print(theta.shape, beta.shape)
+        # # 打印X和Y的形状
+        # print(theta.shape, beta.shape)
 
-        # 恢复原始的标准输出流
-        sys.stdout = original_stdout
+        # # 恢复原始的标准输出流
+        # sys.stdout = original_stdout
         M = 1 - beta     #cost matrix
         sh_loss = ot.sliced_wasserstein_distance(M.T, theta)
         recon = F.softmax(torch.matmul(theta, beta), dim=-1)  #重构误差（定义为模型输出值与原始输入之间的均方误差）最小化
