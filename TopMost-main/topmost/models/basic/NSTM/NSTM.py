@@ -4,6 +4,7 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 from .auto_diff_sinkhorn import sinkhorn_loss,SWD
+import ot
 
 
 class NSTM(nn.Module):
@@ -43,15 +44,11 @@ class NSTM(nn.Module):
         return beta
 
     def get_theta(self, input): #在3.proposed model寻找相关
-        # theta = F.relu(self.e1(input)) # 通过 ReLU 激活函数，将所有负值置为0
-        # theta = self.e_dropout(theta) #进行 Dropout 操作,以防止过拟合。
-        # theta = self.mean_bn(self.e2(theta))#并通过 BatchNormalization 层 self.mean_bn，对结果进行标准化处理。
-        # theta = F.softmax(theta, dim=-1) # 最后，对标准化后的结果进行 Softmax 操作，得到文档的主题分布 theta，使得 theta 中每个元素都在 0 到 1 之间，并且所有元素的和为1，表示每个主题的概率。
-        # return theta  # 论文中的z = softmax(θ(~x))
-        theta = F.relu(input.T)
+        theta = F.relu(self.e1(input)) # 通过 ReLU 激活函数，将所有负值置为0
         theta = self.e_dropout(theta) #进行 Dropout 操作,以防止过拟合。
         theta = self.mean_bn(self.e2(theta))#并通过 BatchNormalization 层 self.mean_bn，对结果进行标准化处理。
-        theta = F.softmax(theta, dim=-1)
+        theta = F.softmax(theta, dim=-1) # 最后，对标准化后的结果进行 Softmax 操作，得到文档的主题分布 theta，使得 theta 中每个元素都在 0 到 1 之间，并且所有元素的和为1，表示每个主题的概率。
+        return theta  # 论文中的z = softmax(θ(~x))
         return theta
  
 
@@ -72,7 +69,7 @@ class NSTM(nn.Module):
         # 恢复原始的标准输出流
         sys.stdout = original_stdout
         M = 1 - beta     #cost matrix
-        sh_loss = SWD(M, theta.T)
+        sh_loss = ot.sliced_wasserstein_distance(M, theta.T)
         recon = F.softmax(torch.matmul(theta, beta), dim=-1)  #重构误差（定义为模型输出值与原始输入之间的均方误差）最小化
         recon_loss = -(input * recon.log()).sum(axis=1)
 
