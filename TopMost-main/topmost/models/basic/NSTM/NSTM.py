@@ -40,6 +40,7 @@ class NSTM(nn.Module):
         word_embedding_norm = F.normalize(self.word_embeddings) # [vocab_size, embed_size]
         topic_embedding_norm = F.normalize(self.topic_embeddings) # [num_topics, embed_size]
         beta = torch.matmul(topic_embedding_norm, word_embedding_norm.T) # 矩阵乘法 [num_topics, vocab_size]
+        
         return beta
 
     def get_theta(self, input): #在3.proposed model寻找相关
@@ -52,6 +53,19 @@ class NSTM(nn.Module):
     def forward(self, input):
         theta = self.get_theta(input)  #文档的主题分布  
         beta = self.get_beta()   #主题嵌入矩阵和词嵌入矩阵之间的相关性矩阵[num_topics, vocab_size]
+        import sys
+
+        # 保存原始的标准输出流
+        original_stdout = sys.stdout
+
+        # 将输出流重定向到标准输出
+        sys.stdout = original_stdout
+
+        # 打印X和Y的形状
+        print(theta.shape, beta.shape)
+
+        # 恢复原始的标准输出流
+        sys.stdout = original_stdout
         M = 1 - beta     #cost matrix
         sh_loss = SWD(M, theta.T)
         recon = F.softmax(torch.matmul(theta, beta), dim=-1)  #重构误差（定义为模型输出值与原始输入之间的均方误差）最小化
