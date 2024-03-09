@@ -13,7 +13,7 @@ class NSTM(nn.Module):
 
         He Zhao, Dinh Phung, Viet Huynh, Trung Le, Wray Buntine.
     '''
-    def __init__(self, vocab_size, num_topics=50, en_units=600, dropout=0.25, pretrained_WE=None, train_WE=True, embed_size=200, recon_loss_weight=0.07, sinkhorn_alpha=20):
+    def __init__(self, vocab_size, num_topics=50, en_units=200, dropout=0.25, pretrained_WE=None, train_WE=True, embed_size=200, recon_loss_weight=0.07, sinkhorn_alpha=20):
         super().__init__()
 
         self.recon_loss_weight = recon_loss_weight
@@ -69,7 +69,7 @@ class NSTM(nn.Module):
         # # 恢复原始的标准输出流
         # sys.stdout = original_stdout
         M = 1 - beta     #cost matrix
-        sh_loss = ot.sliced_wasserstein_distance(M.T, theta)
+        sh_loss = ot.emd2(M, theta.T, F.softmax(input, dim=-1).T)
         recon = F.softmax(torch.matmul(theta, beta), dim=-1)  #重构误差（定义为模型输出值与原始输入之间的均方误差）最小化
         recon_loss = -(input * recon.log()).sum(axis=1)
 
