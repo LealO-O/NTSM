@@ -57,7 +57,7 @@ class NSTM(nn.Module):
         beta = self.get_beta()   #主题嵌入矩阵和词嵌入矩阵之间的相关性矩阵[num_topics, vocab_size]
         
         M = 1 - beta     #cost matrix
-        lambd = 60
+        lambd = 50
         sh_loss = ot.bregman.empirical_sinkhorn( theta, M.T,lambd)
         recon = F.softmax(torch.matmul(theta, beta), dim=-1)  #重构误差（定义为模型输出值与原始输入之间的均方误差）最小化
         recon_loss = -(input * recon.log()).sum(axis=1)
