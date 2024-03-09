@@ -64,7 +64,7 @@ class NSTM(nn.Module):
         sys.stdout = original_stdout
 
         # 打印X和Y的形状
-        print(theta.shape, beta.shape， F.softmax(input, dim=-1).T.shape)
+        print(theta.shape, beta.shape, F.softmax(input, dim=-1).T.shape)
 
         # 恢复原始的标准输出流
         sys.stdout = original_stdout
