@@ -71,6 +71,8 @@ class NSTM(nn.Module):
 
         # 打印X和Y的形状
         print(sh_loss.shape,recon_loss.shape)
+        print("sh_loss: ",sh_loss)
+        print("recon_loss: ",recon_loss)
 
         # 恢复原始的标准输出流
         sys.stdout = original_stdout
