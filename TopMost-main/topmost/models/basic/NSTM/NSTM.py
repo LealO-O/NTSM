@@ -61,21 +61,21 @@ class NSTM(nn.Module):
         sh_loss = ot.bregman.empirical_sinkhorn( theta, M.T,lambd)
         recon = F.softmax(torch.matmul(theta, beta), dim=-1)  #重构误差（定义为模型输出值与原始输入之间的均方误差）最小化
         recon_loss = -(input * recon.log()).sum(axis=1)
-        import sys
+        # import sys
 
-        # 保存原始的标准输出流
-        original_stdout = sys.stdout
+        # # 保存原始的标准输出流
+        # original_stdout = sys.stdout
 
-        # 将输出流重定向到标准输出
-        sys.stdout = original_stdout
+        # # 将输出流重定向到标准输出
+        # sys.stdout = original_stdout
 
-        # 打印X和Y的形状
-        print(sh_loss.shape,recon_loss.shape)
-        print("sh_loss: ",sh_loss)
-        print("recon_loss: ",recon_loss)
+        # # 打印X和Y的形状
+        # print(sh_loss.shape,recon_loss.shape)
+        # print("sh_loss: ",sh_loss)
+        # print("recon_loss: ",recon_loss)
 
-        # 恢复原始的标准输出流
-        sys.stdout = original_stdout
-        loss = self.recon_loss_weight * recon_loss + sh_loss
+        # # 恢复原始的标准输出流
+        # sys.stdout = original_stdout
+        loss = self.recon_loss_weight * recon_loss + sh_loss.sum(dim=1)
         loss = loss.mean()
         return {'loss': loss}
