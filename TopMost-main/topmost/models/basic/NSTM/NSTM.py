@@ -69,7 +69,7 @@ class NSTM(nn.Module):
         # # 恢复原始的标准输出流
         # sys.stdout = original_stdout
         M = 1 - beta     #cost matrix
-        sh_loss = ot.bregman.empirical_sinkhorn( theta.T, M,lambd = 1e-1)
+        sh_loss = ot.bregman.empirical_sinkhorn( theta.T, M, F.softmax(input, dim=-1).T,lambd = 1e-1)
         recon = F.softmax(torch.matmul(theta, beta), dim=-1)  #重构误差（定义为模型输出值与原始输入之间的均方误差）最小化
         recon_loss = -(input * recon.log()).sum(axis=1)
 
